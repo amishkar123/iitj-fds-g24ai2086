@@ -1,0 +1,29 @@
+{
+  "title": "Smart Grid Monitoring",
+  "panels": [
+    {
+      "title": "Substation Load",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [{
+        "expr": "current_load",
+        "legendFormat": "{{substation}}"
+      }]
+    },
+    {
+      "title": "Requests Rate",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [{
+        "expr": "rate(charging_requests_total[1m])",
+        "legendFormat": "Requests/min"
+      }]
+    }
+  ],
+  "templating": {
+    "list": [{
+      "name": "substation",
+      "query": "label_values(current_load, substation)"
+    }]
+  }
+}

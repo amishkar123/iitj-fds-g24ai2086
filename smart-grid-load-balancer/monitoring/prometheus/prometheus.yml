@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'substations'
+    static_configs:
+      - targets: ['substation1:6001', 'substation2:6001', 'substation3:6001']
+  - job_name: 'load_balancer'
+    static_configs:
+      - targets: ['load_balancer:5002']

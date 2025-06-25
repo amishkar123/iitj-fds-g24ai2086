@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  charge_request_service:
+    build: ./charge_request_service
+    ports:
+      - "5000:5000"
+    depends_on:
+      - load_balancer
+
+  load_balancer:
+    build: ./load_balancer
+    ports:
+      - "5001:5001"
+      - "5002:5002"
+    depends_on:
+      - substation1
+      - substation2
+      - substation3
+
+  substation1:
+    build: ./substation_service
+    ports:
+      - "6000:6000"
+      - "6001:6001"
+    environment:
+      - SUBSTATION_ID=1
+
+  substation2:
+    build: ./substation_service
+    ports:
+      - "6002:6000"
+      - "6003:6001"
+    environment:
+      - SUBSTATION_ID=2
+
+  substation3:
+    build: ./substation_service
+    ports:
+      - "6004:6000"
+      - "6005:6001"
+    environment:
+      - SUBSTATION_ID=3
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - substation1
+      - substation2
+      - substation3
+      - load_balancer
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - ./monitoring/grafana/dashboard.json:/etc/grafana/provisioning/dashboards/dashboard.json
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+  load_tester:
+    build: ./load_tester
+    depends_on:
+      - charge_request_service
