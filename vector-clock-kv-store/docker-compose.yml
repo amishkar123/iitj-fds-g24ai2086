@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  node0:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ID=0
+      - NODES='["http://node0:5000", "http://node1:5000", "http://node2:5000"]'
+    networks:
+      - kv_network
+
+  node1:
+    build: .
+    ports:
+      - "5001:5000"
+    environment:
+      - NODE_ID=1
+      - NODES='["http://node0:5000", "http://node1:5000", "http://node2:5000"]'
+    networks:
+      - kv_network
+
+  node2:
+    build: .
+    ports:
+      - "5002:5000"
+    environment:
+      - NODE_ID=2
+      - NODES='["http://node0:5000", "http://node1:5000", "http://node2:5000"]'
+    networks:
+      - kv_network
+
+  client:
+    build: .
+    command: python client.py
+    depends_on:
+      - node0
+      - node1
+      - node2
+    networks:
+      - kv_network
+
+networks:
+  kv_network:
+    driver: bridge
