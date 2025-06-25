@@ -1,13 +1,11 @@
-FROM python:3.9-slim
-
+FROM python:3.9-slim-buster
 WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src/ .
+COPY src/ ./src/
 
-ENV FLASK_APP=node.py
-ENV FLASK_ENV=production
+EXPOSE 5000
 
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["python", "src/node.py"]
